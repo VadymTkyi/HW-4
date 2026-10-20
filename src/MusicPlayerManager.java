@@ -1,11 +1,13 @@
 public class MusicPlayerManager {
-
+    LinkedList playList = new LinkedList();
     public MusicPlayerManager(){
 
     }
     public boolean addSong(String id,String title, String artist){
-        return false;
+        playList.add(id,title,artist);
+        return true;//temporary
     }
+
     public void findSong(String id){
         //returns song
     }
@@ -31,9 +33,8 @@ public class MusicPlayerManager {
     public void showUpNext(){
         //list of titles
     }
-    public void next(){
-        //returns song
-
+    public String next(){
+        return null;//temp
     }
     public void back(){
         //returns song
