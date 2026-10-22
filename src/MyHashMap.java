@@ -1,10 +1,12 @@
-public class HashMap<K,V> {
+import java.security.Key;
+
+public class MyHashMap<K,V> {
     private Entry<K,V>[] buckets;
     private int size = 0;
     private int capacity;
 
 
-    public HashMap(int capacity){
+    public MyHashMap(int capacity){
         this.capacity = capacity;
         buckets = new Entry[capacity];
     }
@@ -14,6 +16,7 @@ public class HashMap<K,V> {
        if (current == null){
            buckets[index] = new Entry<>(key,value);
            size++;
+           return;
        }
        while (current != null){
            if (current.key.equals(key)){
@@ -27,6 +30,28 @@ public class HashMap<K,V> {
            }
            current = current.next;
        }
+    }
+    public void remove(K key){
+        int index = getIndex(key);
+        Entry<K,V> previous = null;
+        Entry<K,V> current = buckets[index];
+        while (current !=null){
+            if (current.key.equals(key)){
+                if (previous == null){
+                    buckets[index] = current.next;
+                }
+                else {
+                    previous.next = current.next;
+                }
+                size--;
+                return;
+            }
+            previous = current;
+            current = current.next;
+        }
+
+
+
     }
     public V get(K key){
         int index = getIndex(key);
@@ -56,9 +81,6 @@ public class HashMap<K,V> {
     }
     private int getIndex( K key){
         return Math.floorMod(key.hashCode(), capacity);
-    }
-    public boolean containsKey(){
-        return true;
     }
 
     public int getSize() {
