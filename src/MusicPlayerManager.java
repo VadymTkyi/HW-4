@@ -1,7 +1,10 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class MusicPlayerManager {
     private LinkedList.Node current;
     private LinkedList playlist = new LinkedList();
-    private MyHashMap<String, LinkedList.Node> library = new MyHashMap<>(16);
+    MyHashMap<String, LinkedList.Node> library = new MyHashMap<>(16);
     private MyDeque<LinkedList.Node> upNext = new MyDeque<>();
     private Stack<LinkedList.Node> history = new Stack<>();
     private MyHashMap<String,Integer> playCounts = new MyHashMap<>(16);
@@ -19,44 +22,127 @@ public class MusicPlayerManager {
     public LinkedList.Node findSong(String id){
          return library.get(id);
     }
-    public void showPlaylist(){
+    public List<String> showPlaylist(){
+        List<String> result = new ArrayList<>();
+        LinkedList.Node temp = this.playlist.getHead();
+        while (temp!=null){
+            result.add(temp.getTitle());
+            temp=temp.getNext();
+        }
+        return result;
     }
     public LinkedList.Node play(String id){
         if (!library.containsKey(id)) {
             return null;
         }
-        else {
-            current = library.get(id);
-            return current;
+        if (current != null){
+            history.push(current);
         }
-    }
-    public void nowPlaying(){
-        //return song
-    }
-    public void playCount(String id){
-        //returns int
-    }
-    public void queueLayer(String id){
-    //true or false
-    }
-    public void queueNext(String id){
-        //true or false
+        current = library.get(id);
+        if (playCounts.get(id) ==null){
+            playCounts.put(id,1);
+        }
+        else {
+            playCounts.put(id,playCounts.get(id)+1);
+        }
+        return current;
 
     }
-    public void showUpNext(){
-        //list of titles
+    public LinkedList.Node nowPlaying(){
+        return current;
     }
-    public String next(){
-        return null;//temp
+    public int playCount(String id){
+        if (playCounts.get(id)==null){
+            return 0;
+        }
+        else return playCounts.get(id);
     }
-    public void back(){
-        //returns song
+    public boolean queueLater(String id){
+        if (library.get(id)!=null){
+            upNext.addLast(library.get(id));
+            return true;
+        }
+        return false;
     }
-    public void showHistory(){
-        //returns list of titles
+    public boolean queueNext(String id){
+        if (library.get(id)!=null){
+            upNext.addFirst(library.get(id));
+            return true;
+        }
+        return false;
+
     }
-    public void removeSong(String id){
-        //return true/false
+    public List<String> showUpNext(){
+        List<String> result = new ArrayList<String>();
+        MyDeque<LinkedList.Node> temp = new MyDeque<>();
+        while (!upNext.isEmpty()){
+            LinkedList.Node song = upNext.removeFirst();
+            if (library.containsKey(song.getId())) {
+                result.add(song.getTitle());
+                temp.addLast(song);
+            }
+        }
+        while (!temp.isEmpty()){
+            upNext.addLast(temp.removeFirst());
+        }
+        return result;
+    }
+    public LinkedList.Node next(){
+        LinkedList.Node next;
+        while (!upNext.isEmpty()&&!library.containsKey(upNext.peekFirst().getId())){
+            upNext.removeFirst();
+        }
+        if (!upNext.isEmpty()) {
+            next = upNext.removeFirst();
+
+        }
+        else {
+            if (current == null){
+                return null;
+            }
+            next = current.getNext();
+
+            if (next ==null){
+                return null;
+            }
+        }
+        if (current!= null){
+            history.push(current);
+        }
+        current = next;
+        playCounts.put(next.getId(),playCount(next.getId())+1);
+
+        return current;
+    }
+    public LinkedList.Node back(){
+        return current.getPrev();
+    }
+    public List<String> showHistory(){
+        List<String> result = new ArrayList<>();
+        Stack<LinkedList.Node> temp = new Stack<>();
+       while (!history.isEmpty()){
+           LinkedList.Node song = history.pop();
+            if (library.containsKey(song.getId())){
+                result.add(song.getTitle());
+                temp.push(song);
+            }
+       }
+
+       while (!temp.isEmpty()){
+           history.push(temp.pop());
+       }
+       return result;
+    }
+    public boolean removeSong(String id){
+        LinkedList.Node song = library.get(id);
+        if (song==null||song==current){
+            return false;
+        }
+        playlist.remove(song);
+        playCounts.remove(id);
+        library.remove(id);
+
+        return true;
     }
 
 
