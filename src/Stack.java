@@ -1,29 +1,50 @@
 import java.util.ArrayList;
 public class Stack <E>{
-    private ArrayList<E> stack = new ArrayList<>();
+    private Node top;
+    private int size = 0;
 
+    public Stack(){
+        top = null;
+    }
     public void push(E e){
-        stack.add(e);
+        Node node = new Node(e);
+        node.next = top;
+        top = node;
+        size++;
+
     }
     public E pop(){
-        if (stack.isEmpty()){
+        if (top == null){
             return null;
         }
-        return stack.remove(stack.size()-1);
+        E val = top.val;
+
+        top = top.next;
+        size--;
+
+        return val;
     }
     public E peek(){
-        if (stack.isEmpty()){
+        if (top == null){
             return null;
         }
-        return stack.get(stack.size()-1);
+        return top.val;
     }
 
     public boolean isEmpty(){
-        return stack.isEmpty();
+        return size==0;
     }
 
     public int size(){
-        return stack.size();
+        return size;
+    }
+    private class Node{
+        private E val;
+        private Node next;
+
+       public Node(E val){
+           this.val = val;
+        }
     }
 
 

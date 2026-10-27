@@ -4,7 +4,7 @@ import java.util.List;
 public class MusicPlayerManager {
     private LinkedList.Node current;
     private LinkedList playlist = new LinkedList();
-    MyHashMap<String, LinkedList.Node> library = new MyHashMap<>(16);
+    private MyHashMap<String, LinkedList.Node> library = new MyHashMap<>(16);
     private MyDeque<LinkedList.Node> upNext = new MyDeque<>();
     private Stack<LinkedList.Node> history = new Stack<>();
     private MyHashMap<String,Integer> playCounts = new MyHashMap<>(16);
@@ -94,14 +94,12 @@ public class MusicPlayerManager {
         }
         if (!upNext.isEmpty()) {
             next = upNext.removeFirst();
-
         }
         else {
             if (current == null){
                 return null;
             }
             next = current.getNext();
-
             if (next ==null){
                 return null;
             }
@@ -115,7 +113,20 @@ public class MusicPlayerManager {
         return current;
     }
     public LinkedList.Node back(){
-        return current.getPrev();
+        LinkedList.Node prev;
+        while (!history.isEmpty() && !library.containsKey(history.peek().getId())) {
+            history.pop();
+        }
+        if (history.isEmpty()){
+            return null;
+        }
+        prev = history.pop();
+        if (current!=null){
+            upNext.addFirst(current);
+        }
+        current = prev;
+        playCounts.put(current.getId(),playCount(current.getId())+1);
+        return current;
     }
     public List<String> showHistory(){
         List<String> result = new ArrayList<>();
