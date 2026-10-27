@@ -1,3 +1,4 @@
+import java.net.IDN;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,15 @@ public class MusicPlayerManager {
         LinkedList.Node temp = this.playlist.getHead();
         while (temp!=null){
             result.add(temp.getTitle());
+            temp=temp.getNext();
+        }
+        return result;
+    }
+    private List<String> showPlaylistId(){
+        List<String> result = new ArrayList<>();
+        LinkedList.Node temp = this.playlist.getHead();
+        while (temp!=null){
+            result.add(temp.getId());
             temp=temp.getNext();
         }
         return result;
@@ -154,6 +164,17 @@ public class MusicPlayerManager {
         library.remove(id);
 
         return true;
+    }
+    public List<String> topSongs(int n){
+        List<String> ids = showPlaylistId();
+        ids.sort((id1,id2)->Integer.compare(playCount(id2),playCount(id1)));
+        List<String> result = new ArrayList<>();
+
+        for (int i = 0;i< n&& i< ids.size();i++) {
+            LinkedList.Node song = library.get(ids.get(i));
+            result.add(song.getTitle()+": amount played "+playCount(song.getId()));
+        }
+        return result;
     }
 
 

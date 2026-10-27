@@ -81,6 +81,8 @@ public class Test {
       System.out.println("now playing: "+(song==null ? "null" : song.getTitle()));
       System.out.println("playlist: "+emptyPlayer.showPlaylist());
 
+      System.out.println("---10. Top Songs Test ---");
+      System.out.println("Top 3 songs"+playerManager.topSongs(3));
 
 
 
